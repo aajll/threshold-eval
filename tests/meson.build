@@ -65,3 +65,12 @@ test('threshold_eval_policies', test_policies)
 test('threshold_eval_boundaries', test_boundaries)
 test('threshold_eval_helpers', test_helpers)
 test('threshold_eval_ordering', test_threshold_ordering)
+
+test_edge_cases = executable(
+  'test_edge_cases',
+  files('test_edge_cases.c'),
+  dependencies: [threshold_eval_dep],
+  include_directories: [public_headers, generated_headers],
+)
+
+test('threshold_eval_edge_cases', test_edge_cases)
