@@ -32,18 +32,16 @@ For subproject builds, include the public header directly:
 #include "threshold_eval.h"
 ```
 
-To keep configuration separate from application code, you can optionally use
-the public configuration header before including `threshold_eval.h`:
+`threshold_eval.h` includes `threshold_eval_conf.h` automatically, so you
+can configure the library with a single include. If you prefer to keep
+configuration in a separate file, you can include `threshold_eval_conf.h`
+first:
 
 ```c
 #define THRESHOLD_EVAL_MAX 1000000.0f
 #include "threshold_eval_conf.h"
 #include "threshold_eval.h"
 ```
-
-`threshold_eval.h` includes `threshold_eval_conf.h` automatically, so
-defining `THRESHOLD_EVAL_MAX` or `THRESHOLD_EVAL_EPSILON` before
-`threshold_eval.h` also works when you prefer a single include.
 
 ### As an installed dependency
 
@@ -81,7 +79,6 @@ meson test -C build --verbose
 ## Quick Start
 
 ```c
-#include "threshold_eval_conf.h"
 #include "threshold_eval.h"
 
 int main(void)
@@ -129,12 +126,14 @@ int main(void)
 | `THRESHOLD_EVAL_MAX` | Maximum absolute threshold value (configured via `threshold_eval_conf.h`, default: 4000000.0) |
 | `THRESHOLD_EVAL_EPSILON` | Default boundary comparison epsilon (configured via `threshold_eval_conf.h`, default: 1e-3) |
 
-### Public Configuration Header
+### Single-Include Override
+
+Define macros before including `threshold_eval.h` — it pulls in the
+configuration header automatically:
 
 ```c
 #define THRESHOLD_EVAL_MAX     1000000.0f
 #define THRESHOLD_EVAL_EPSILON 0.01f
-#include "threshold_eval_conf.h"
 #include "threshold_eval.h"
 ```
 
@@ -215,6 +214,14 @@ const char *threshold_status_str(threshold_status_t status);
   threshold_severity_t current =
       threshold_plan_eval_hys(&plan, sample, 2.0f, prev);
   prev = current;
+  ```
+
+- **Custom configuration**: Override defaults via a separate config file
+  ```c
+  #define THRESHOLD_EVAL_MAX     1000000.0f
+  #define THRESHOLD_EVAL_EPSILON 0.01f
+  #include "threshold_eval_conf.h"
+  #include "threshold_eval.h"
   ```
 
 - **Discrete digital threshold**: Single-threshold warning for a computed ratio or percentage
