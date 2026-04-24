@@ -694,8 +694,6 @@ threshold_status_str(threshold_status_t status)
         switch (status) {
         case THRESHOLD_STATUS_OK: return "OK";
         case THRESHOLD_STATUS_INVALID_ARG: return "Invalid argument";
-        case THRESHOLD_STATUS_NONFINITE:
-                return "Threshold is non-finite (NaN or Inf)";
         case THRESHOLD_STATUS_OUT_OF_RANGE:
                 return "Threshold exceeds maximum range";
         case THRESHOLD_STATUS_MISSING: return "Required threshold is missing";
@@ -703,8 +701,6 @@ threshold_status_str(threshold_status_t status)
                 return "Thresholds are not in monotonic order";
         case THRESHOLD_STATUS_EXTRA:
                 return "Extra thresholds provided for plan type";
-        case THRESHOLD_STATUS_PLAN_INVALID:
-                return "Plan has not been successfully built";
         default: return "Unknown status";
         }
 }

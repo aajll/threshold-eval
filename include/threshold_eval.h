@@ -191,9 +191,6 @@ typedef enum {
         /** Invalid argument (NULL pointer, invalid enum value). */
         THRESHOLD_STATUS_INVALID_ARG = -1,
 
-        /** Threshold value is non-finite (NaN or Inf). */
-        THRESHOLD_STATUS_NONFINITE = -2,
-
         /** Threshold value exceeds THRESHOLD_EVAL_MAX. */
         THRESHOLD_STATUS_OUT_OF_RANGE = -3,
 
@@ -212,9 +209,6 @@ typedef enum {
          * Only returned when THRESHOLD_POLICY_STRICT_CONFIG is set.
          */
         THRESHOLD_STATUS_EXTRA = -6,
-
-        /** Plan has not been successfully built via threshold_plan_build(). */
-        THRESHOLD_STATUS_PLAN_INVALID = -7,
 } threshold_status_t;
 
 /**
