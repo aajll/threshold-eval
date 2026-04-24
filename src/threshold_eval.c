@@ -203,9 +203,6 @@ validate_upper(const threshold_config_t *cfg, bool strict)
                 if (is_finite(cfg->lolo) || is_finite(cfg->lo)) {
                         return THRESHOLD_STATUS_EXTRA;
                 }
-        }
-
-        if (strict) {
                 if (!is_ordered(cfg->hi, cfg->hihi)) {
                         return THRESHOLD_STATUS_ORDER;
                 }
@@ -240,9 +237,6 @@ validate_lower(const threshold_config_t *cfg, bool strict)
                 if (is_finite(cfg->hi) || is_finite(cfg->hihi)) {
                         return THRESHOLD_STATUS_EXTRA;
                 }
-        }
-
-        if (strict) {
                 if (!is_ordered(cfg->lolo, cfg->lo)) {
                         return THRESHOLD_STATUS_ORDER;
                 }
@@ -451,7 +445,7 @@ threshold_config_init(threshold_config_t *config)
 threshold_status_t
 threshold_plan_build(threshold_plan_t *plan, const threshold_config_t *config)
 {
-        threshold_status_t status;
+        threshold_status_t status = THRESHOLD_STATUS_OK;
 
         if ((plan == NULL) || (config == NULL)) {
                 if (plan != NULL) {
