@@ -32,6 +32,7 @@ meson test -C build --verbose
 
 - Use Conventional Commits when asked to commit.
 - Keep commits focused and explain why the change exists.
+- **Never** commit unless the user explicitly asks
 
 ## C style expectations
 
@@ -55,6 +56,7 @@ meson test -C build --verbose
 - Prefer explicit fixed-width integer types when ABI or serialization matters.
 - All floating-point inputs entering the library must be validated for finiteness (MISRA C:2012 Dir 4.15).
 - No dynamic memory allocation anywhere in the library.
+- **Do not** preserve backwards compatability unless the user explicitly asks
 
 ### API design
 
