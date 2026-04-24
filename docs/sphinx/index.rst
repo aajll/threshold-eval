@@ -24,6 +24,35 @@ invalid inputs, hysteresis support, and epsilon dead-bands.
 The full symbol-level reference is available in the
 `API Reference <api/modules.html>`_.
 
+Design Principles
+-----------------
+
+threshold-eval is designed for use in safety-critical embedded systems targeting
+IEC 61508 SIL 2 and MISRA C:2012 compliance. Key design guarantees:
+
+- **No dynamic memory** — no heap allocation; all structures are caller-owned
+  and can be stack- or statically-allocated
+- **No hidden global state** — evaluation functions are pure and stateless;
+  no side effects, no static variables
+- **Thread safety** — ``threshold_plan_eval()`` is a pure function and is safe
+  for concurrent callers sharing a read-only plan; ``threshold_plan_build()``
+  must not be called concurrently on the same plan
+- **Plan validity** — a plan must not be used for evaluation unless
+  ``plan->valid == true``; always check the return of
+  ``threshold_plan_build()``
+- **Hysteresis state** — the caller must track ``prev`` between calls;
+  ``threshold_plan_eval_hys()`` is stateless
+- **Non-finite samples** — NaN and Inf are detected before comparison;
+  result is driven entirely by policy flags (``FAILSAFE_TRIP``,
+  ``DEESCALATE_WARN``, ``IGNORE_INVALID``)
+- **Threshold range** — all thresholds must satisfy ``|value| <=
+  THRESHOLD_EVAL_MAX`` (default 4,000,000); values outside this range cause
+  ``threshold_plan_build()`` to return ``THRESHOLD_STATUS_OUT_OF_RANGE``
+- **Monotonic order** — ``LOLO <= LO <= HI <= HIHI``; enforced by
+  ``STRICT_CONFIG`` or corrected automatically by ``ALLOW_REORDER``
+- **Epsilon** — applied as dead-band at boundaries; set to 0.0f to disable;
+  configurable per-plan via ``threshold_config_t.epsilon``
+
 Quick Start
 -----------
 
