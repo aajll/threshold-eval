@@ -8,39 +8,7 @@
  */
 
 #include "threshold_eval.h"
-
-#include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-/* ================ Test framework ========================================== */
-
-#define TEST_ASSERT(expr)                                                      \
-        do {                                                                   \
-                if (!(expr)) {                                                 \
-                        fprintf(stderr, "FAIL  %s:%d  %s\n", __FILE__,         \
-                                __LINE__, #expr);                              \
-                        exit(EXIT_FAILURE);                                    \
-                }                                                              \
-        } while (0)
-
-#define TEST_ASSERT_EQUAL(expected, actual) TEST_ASSERT((expected) == (actual))
-#define TEST_ASSERT_TRUE(expr)              TEST_ASSERT(!!(expr))
-#define TEST_ASSERT_FALSE(expr)             TEST_ASSERT(!(expr))
-
-#define TEST_PASS(name) fprintf(stdout, "PASS  %s\n", (name))
-
-#define TEST_CASE(name)                                                        \
-        static void name(void);                                                \
-        static void name(void)
-
-static void
-run_test(void (*test_func)(void), const char *name)
-{
-        test_func();
-        TEST_PASS(name);
-}
+#include "test_harness.h"
 
 /* ================ Invalid enum type tests ================================= */
 
@@ -586,6 +554,72 @@ TEST_CASE(test_reorder_partially_sorted_range)
                           threshold_plan_eval(&plan, 95.0f));
 }
 
+/* ================ FAILSAFE_TRIP without STRICT_CONFIG ===================== */
+
+/**
+ * @brief FAILSAFE_TRIP alone (no STRICT_CONFIG) accepts out-of-order
+ *        thresholds without reordering.
+ *
+ * Without STRICT_CONFIG, ordering is not validated. The plan is built with
+ * whatever order the user provided.
+ */
+TEST_CASE(test_failsafe_trip_without_strict_out_of_order)
+{
+        threshold_config_t cfg;
+        threshold_plan_t plan;
+        threshold_config_init(&cfg);
+        cfg.type = THRESHOLD_TYPE_RANGE;
+        cfg.lolo = 90.0f; /* out of order */
+        cfg.lo = 80.0f;
+        cfg.hi = 20.0f;
+        cfg.hihi = 10.0f;
+        cfg.policy = THRESHOLD_POLICY_FAILSAFE_TRIP;
+
+        threshold_status_t status = threshold_plan_build(&plan, &cfg);
+        TEST_ASSERT_EQUAL(THRESHOLD_STATUS_OK, status);
+        TEST_ASSERT_TRUE(plan.valid);
+        /* Thresholds are NOT reordered (no ALLOW_REORDER, no STRICT_CONFIG)
+         * — they stay as provided. */
+        TEST_ASSERT_FLOAT_WITHIN(1e-6f, 90.0f, plan.lolo);
+        TEST_ASSERT_FLOAT_WITHIN(1e-6f, 80.0f, plan.lo);
+        TEST_ASSERT_FLOAT_WITHIN(1e-6f, 20.0f, plan.hi);
+        TEST_ASSERT_FLOAT_WITHIN(1e-6f, 10.0f, plan.hihi);
+}
+
+/* ================ FAILSAFE | ALLOW_REORDER combination ==================== */
+
+/**
+ * @brief FAILSAFE (FAILSAFE_TRIP | STRICT_CONFIG) combined with ALLOW_REORDER
+ *        for RANGE with out-of-order thresholds.
+ *
+ * ALLOW_REORDER takes precedence: ordering check is skipped and thresholds
+ * are sorted.
+ */
+TEST_CASE(test_failsafe_with_allow_reorder_range)
+{
+        threshold_config_t cfg;
+        threshold_plan_t plan;
+        threshold_config_init(&cfg);
+        cfg.type = THRESHOLD_TYPE_RANGE;
+        cfg.lolo = 90.0f;
+        cfg.lo = 80.0f;
+        cfg.hi = 20.0f;
+        cfg.hihi = 10.0f;
+        cfg.policy = THRESHOLD_POLICY_FAILSAFE | THRESHOLD_POLICY_ALLOW_REORDER;
+
+        threshold_status_t status = threshold_plan_build(&plan, &cfg);
+        TEST_ASSERT_EQUAL(THRESHOLD_STATUS_OK, status);
+        TEST_ASSERT_TRUE(plan.valid);
+        /* ALLOW_REORDER overrides STRICT_CONFIG ordering check */
+        TEST_ASSERT_FLOAT_WITHIN(1e-6f, 10.0f, plan.lolo);
+        TEST_ASSERT_FLOAT_WITHIN(1e-6f, 20.0f, plan.lo);
+        TEST_ASSERT_FLOAT_WITHIN(1e-6f, 80.0f, plan.hi);
+        TEST_ASSERT_FLOAT_WITHIN(1e-6f, 90.0f, plan.hihi);
+        /* FAILSAFE_TRIP still applies for NaN */
+        TEST_ASSERT_EQUAL(THRESHOLD_SEV_TRIP_HIGH,
+                          threshold_plan_eval(&plan, NAN));
+}
+
 /* ================ Main ==================================================== */
 
 int
@@ -654,6 +688,14 @@ main(void)
         /* Partially sorted reorder */
         run_test(test_reorder_partially_sorted_range,
                  "test_reorder_partially_sorted_range");
+
+        /* FAILSAFE_TRIP without STRICT_CONFIG */
+        run_test(test_failsafe_trip_without_strict_out_of_order,
+                 "test_failsafe_trip_without_strict_out_of_order");
+
+        /* FAILSAFE | ALLOW_REORDER combination */
+        run_test(test_failsafe_with_allow_reorder_range,
+                 "test_failsafe_with_allow_reorder_range");
 
         fprintf(stdout, "\n=== All tests passed ===\n\n");
         return EXIT_SUCCESS;

@@ -4,44 +4,7 @@
  */
 
 #include "threshold_eval.h"
-
-#include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-/* ================ Test framework ========================================== */
-
-#define TEST_ASSERT(expr)                                                      \
-        do {                                                                   \
-                if (!(expr)) {                                                 \
-                        fprintf(stderr, "FAIL  %s:%d  %s\n", __FILE__,         \
-                                __LINE__, #expr);                              \
-                        exit(EXIT_FAILURE);                                    \
-                }                                                              \
-        } while (0)
-
-#define TEST_ASSERT_EQUAL(expected, actual) TEST_ASSERT((expected) == (actual))
-#define TEST_ASSERT_TRUE(expr)              TEST_ASSERT(!!(expr))
-#define TEST_ASSERT_FALSE(expr)             TEST_ASSERT(!(expr))
-#define TEST_ASSERT_NOT_NULL(ptr)           TEST_ASSERT((ptr) != NULL)
-
-#define TEST_ASSERT_FLOAT_WITHIN(delta, expected, actual)                      \
-        TEST_ASSERT(fabsf((float)(actual) - (float)(expected))                 \
-                    <= (float)(delta))
-
-#define TEST_PASS(name) fprintf(stdout, "PASS  %s\n", (name))
-
-#define TEST_CASE(name)                                                        \
-        static void name(void);                                                \
-        static void name(void)
-
-static void
-run_test(void (*test_func)(void), const char *name)
-{
-        test_func();
-        TEST_PASS(name);
-}
+#include "test_harness.h"
 
 /* ================ threshold_plan_eval tests =============================== */
 

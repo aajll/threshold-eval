@@ -74,3 +74,12 @@ test_edge_cases = executable(
 )
 
 test('threshold_eval_edge_cases', test_edge_cases)
+
+test_nonfinite_samples = executable(
+  'test_nonfinite_samples',
+  files('test_nonfinite_samples.c'),
+  dependencies: [threshold_eval_dep],
+  include_directories: [public_headers, generated_headers],
+)
+
+test('threshold_eval_nonfinite_samples', test_nonfinite_samples)
