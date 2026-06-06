@@ -1,8 +1,8 @@
 # threshold-eval
 
-[![CI](https://github.com/ACIDBURN2501/threshold-eval/actions/workflows/ci.yml/badge.svg)](https://github.com/ACIDBURN2501/threshold-eval/actions/workflows/ci.yml)
+[![CI](https://github.com/aajll/threshold-eval/actions/workflows/ci.yml/badge.svg)](https://github.com/aajll/threshold-eval/actions/workflows/ci.yml)
 
-Configurable threshold evaluation library for classifying sampled values against validated warning/trip limits with deterministic, policy-driven behavior.
+Configurable threshold evaluation library for classifying sampled values against validated warning/trip limits with deterministic, policy-driven behaviour.
 
 ## Features
 
@@ -15,7 +15,7 @@ Configurable threshold evaluation library for classifying sampled values against
 - **Stateless evaluation**: `threshold_plan_eval()` is a pure function with no hidden state making it safe to call from any context
 - **Compliance-aware design goals**: Small auditable codebase with static allocation, explicit contracts, and unit-test coverage targeting IEC 61508 SIL 2 and MISRA C:2012
 
-## Using the Library
+## Installation
 
 ### As a Meson subproject
 
@@ -63,19 +63,6 @@ also discover the package as `threshold_eval`.
 The generated version header is available as `threshold_eval_version.h` in the
 build tree and as `<threshold_eval/threshold_eval_version.h>` after install.
 
-## Building
-
-```sh
-# Library only (release)
-meson setup build --buildtype=release -Dbuild_tests=false
-meson compile -C build
-
-# With unit tests
-meson setup build --buildtype=debug -Dbuild_tests=true
-meson compile -C build
-meson test -C build --verbose
-```
-
 ## Quick Start
 
 ```c
@@ -115,6 +102,19 @@ int main(void)
 
         return 0;
 }
+```
+
+## Building
+
+```sh
+# Library only (release)
+meson setup build --buildtype=release -Dbuild_tests=false
+meson compile -C build
+
+# With unit tests
+meson setup build --buildtype=debug -Dbuild_tests=true
+meson compile -C build
+meson test -C build --verbose
 ```
 
 ## API Reference
