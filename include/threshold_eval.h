@@ -1,6 +1,10 @@
 /**
- * @file threshold_eval.h
- * @brief Public API for threshold-eval.
+ * SPDX-License-Identifier: MIT
+ *
+ * @file: threshold_eval.h
+ *
+ * @brief
+ *    Public API for threshold-eval.
  *
  * @details
  *   This library provides a configurable, deterministic mechanism for

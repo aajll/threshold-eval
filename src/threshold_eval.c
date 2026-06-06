@@ -1,6 +1,10 @@
 /**
- * @file threshold_eval.c
- * @brief Implementation of threshold-eval.
+ * SPDX-License-Identifier: MIT
+ *
+ * @file: threshold_eval.c
+ *
+ * @brief
+ *    Implementation of threshold-eval.
  */
 
 /* ================ INCLUDES ================================================ */

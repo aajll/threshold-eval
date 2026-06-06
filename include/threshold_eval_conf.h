@@ -1,6 +1,7 @@
 /**
- * @file
- *    threshold_eval_conf.h
+ * SPDX-License-Identifier: MIT
+ *
+ * @file: threshold_eval_conf.h
  *
  * @brief
  *    Public configuration header for threshold-eval.

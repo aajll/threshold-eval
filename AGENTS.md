@@ -3,7 +3,7 @@
 ## Project-specific instructions
 
 **Project:** `threshold-eval`
-**Primary goal:** Configurable threshold evaluation library for classifying sampled values against validated warning/trip limits with deterministic, policy-driven behavior. Targets IEC 61508 SIL 2 and MISRA C:2012 compliance.
+**Primary goal:** Configurable threshold evaluation library for classifying sampled values against validated warning/trip limits with deterministic, policy-driven behaviour. Targets IEC 61508 SIL 2 and MISRA C:2012 compliance.
 
 ### Essential commands
 
@@ -53,7 +53,7 @@ meson test -C build --verbose
 - Match the conventions in the existing files.
 - All public identifiers use the `threshold_` / `THRESHOLD_` prefix.
 - Keep public headers minimal and stable; do not expose internal helpers.
-- Prefer explicit fixed-width integer types when ABI or serialization matters.
+- Prefer explicit fixed-width integer types when ABI or serialisation matters.
 - All floating-point inputs entering the library must be validated for finiteness (MISRA C:2012 Dir 4.15).
 - No dynamic memory allocation anywhere in the library.
 - **Do not** preserve backwards compatability unless the user explicitly asks
