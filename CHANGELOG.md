@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-06-26
+
 ### Changed
 
 - Added contributor guidance, security policy, SPDX headers, README badge correction, and a standard coverage gate.
