@@ -10,6 +10,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - Added contributor guidance, security policy, SPDX headers, README badge correction, and a standard coverage gate.
 
+### Fixed
+
+- Removed a redundant plan-type range check in `threshold_plan_build`. Its lower bound (`type < THRESHOLD_TYPE_NONE`) is always false on targets whose `enum` representation is unsigned, provoking a "pointless comparison of unsigned integer with zero" warning, while its upper bound duplicated the dispatch `switch` default that already rejects out-of-domain types with `THRESHOLD_STATUS_INVALID_ARG`. Behaviour is unchanged for all inputs.
+
 ## [1.1.0] - 2026-04-04
 
 ### Added

@@ -461,11 +461,14 @@ threshold_plan_build(threshold_plan_t *plan, const threshold_config_t *config)
         /* Mark invalid until successfully built */
         plan->valid = false;
 
-        /* Validate plan type */
-        if ((config->type < THRESHOLD_TYPE_NONE)
-            || (config->type > THRESHOLD_TYPE_DISCRETE_TRIP)) {
-                return THRESHOLD_STATUS_INVALID_ARG;
-        }
+        /*
+         * The plan type is validated by the dispatch switch below: any value
+         * outside the defined enumerators falls through to its default clause
+         * and returns THRESHOLD_STATUS_INVALID_ARG. An explicit range check
+         * here would be redundant with that default, and its lower bound
+         * (type < THRESHOLD_TYPE_NONE, i.e. < 0) is unreachable on targets
+         * whose enum representation is unsigned.
+         */
 
         /* Validate epsilon */
         if (!is_finite(config->epsilon) || (config->epsilon < 0.0f)) {
