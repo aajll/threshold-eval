@@ -27,8 +27,7 @@ The full symbol-level reference is available in the
 Design Principles
 -----------------
 
-threshold-eval is designed for use in safety-critical embedded systems targeting
-IEC 61508 SIL 2 and MISRA C:2012 compliance. Key design guarantees:
+threshold-eval is designed for use in safety-critical embedded systems. Key design guarantees:
 
 - **No dynamic memory** — no heap allocation; all structures are caller-owned
   and can be stack- or statically-allocated

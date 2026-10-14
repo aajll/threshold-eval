@@ -13,7 +13,7 @@ Configurable threshold evaluation library for classifying sampled values against
 - **Threshold reordering**: Optional automatic sort of out-of-order thresholds at plan-build time
 - **Strict configuration mode**: Rejects misconfigured plans (missing thresholds, wrong ordering, extra fields) at build time, not runtime
 - **Stateless evaluation**: `threshold_plan_eval()` is a pure function with no hidden state making it safe to call from any context
-- **Compliance-aware design goals**: Small auditable codebase with static allocation, explicit contracts, and unit-test coverage targeting IEC 61508 SIL 2 and MISRA C:2012
+- **Auditable design**: Small codebase with static allocation, explicit contracts, and a unit-tested public API
 
 ## Installation
 
