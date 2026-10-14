@@ -22,7 +22,7 @@
  * @note
  *   This library uses single-precision floating-point for thresholds and
  *   samples. All floating-point inputs are validated for finiteness per
- *   MISRA C:2012 Dir 4.15 (no reliance on NaN/Inf behavior).
+ *   MISRA C:2023 Dir 4.15 (no reliance on NaN/Inf behavior).
  *
  *   Configuration macros (THRESHOLD_EVAL_MAX, THRESHOLD_EVAL_EPSILON) are
  *   defined in threshold_eval_conf.h, which is included automatically.
