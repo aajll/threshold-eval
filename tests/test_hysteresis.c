@@ -524,6 +524,62 @@ TEST_CASE(test_eval_hys_zero_epsilon_with_hysteresis)
         TEST_ASSERT_EQUAL(THRESHOLD_SEV_OK, s3);
 }
 
+TEST_CASE(test_eval_hys_invalid_plan_returns_invalid)
+{
+        threshold_config_t cfg;
+        threshold_plan_t plan;
+        threshold_config_init(&cfg);
+        cfg.type = THRESHOLD_TYPE_UPPER;
+        cfg.hi = 80.0f;
+        cfg.hihi = 90.0f;
+        TEST_ASSERT_EQUAL(THRESHOLD_STATUS_OK,
+                          threshold_plan_build(&plan, &cfg));
+
+        plan.valid = false;
+        TEST_ASSERT_EQUAL(
+            THRESHOLD_SEV_INVALID,
+            threshold_plan_eval_hys(&plan, 50.0f, 1.0f, THRESHOLD_SEV_OK));
+}
+
+TEST_CASE(test_eval_hys_prev_unused_by_type_is_not_applied)
+{
+        threshold_config_t cfg;
+        threshold_plan_t upper;
+        threshold_plan_t lower;
+
+        threshold_config_init(&cfg);
+        cfg.type = THRESHOLD_TYPE_UPPER;
+        cfg.hi = 80.0f;
+        cfg.hihi = 90.0f;
+        cfg.epsilon = 0.0f;
+        TEST_ASSERT_EQUAL(THRESHOLD_STATUS_OK,
+                          threshold_plan_build(&upper, &cfg));
+
+        threshold_config_init(&cfg);
+        cfg.type = THRESHOLD_TYPE_LOWER;
+        cfg.lolo = 10.0f;
+        cfg.lo = 20.0f;
+        cfg.epsilon = 0.0f;
+        TEST_ASSERT_EQUAL(THRESHOLD_STATUS_OK,
+                          threshold_plan_build(&lower, &cfg));
+
+        /* A low previous severity leaves an upper plan unchanged. */
+        TEST_ASSERT_EQUAL(THRESHOLD_SEV_WARN_HIGH,
+                          threshold_plan_eval_hys(&upper, 85.0f, 10.0f,
+                                                  THRESHOLD_SEV_TRIP_LOW));
+        TEST_ASSERT_EQUAL(THRESHOLD_SEV_OK,
+                          threshold_plan_eval_hys(&upper, 75.0f, 10.0f,
+                                                  THRESHOLD_SEV_WARN_LOW));
+
+        /* A high previous severity leaves a lower plan unchanged. */
+        TEST_ASSERT_EQUAL(THRESHOLD_SEV_WARN_LOW,
+                          threshold_plan_eval_hys(&lower, 15.0f, 10.0f,
+                                                  THRESHOLD_SEV_TRIP_HIGH));
+        TEST_ASSERT_EQUAL(THRESHOLD_SEV_OK,
+                          threshold_plan_eval_hys(&lower, 25.0f, 10.0f,
+                                                  THRESHOLD_SEV_WARN_HIGH));
+}
+
 /* ================ Main ==================================================== */
 
 int
@@ -569,6 +625,11 @@ main(void)
                  "test_eval_hys_prev_invalid_returns_ok");
         run_test(test_eval_hys_zero_epsilon_with_hysteresis,
                  "test_eval_hys_zero_epsilon_with_hysteresis");
+
+        run_test(test_eval_hys_invalid_plan_returns_invalid,
+                 "test_eval_hys_invalid_plan_returns_invalid");
+        run_test(test_eval_hys_prev_unused_by_type_is_not_applied,
+                 "test_eval_hys_prev_unused_by_type_is_not_applied");
 
         fprintf(stdout, "\n=== All tests passed ===\n\n");
         return EXIT_SUCCESS;

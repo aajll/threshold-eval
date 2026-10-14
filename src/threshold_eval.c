@@ -43,22 +43,16 @@ is_finite(float val)
 }
 
 /**
- * @brief Check if a threshold value is within the configured valid range.
+ * @brief Check if a finite threshold value is within the configured range.
  *
- * A threshold is valid if it is finite and its absolute value does not
- * exceed THRESHOLD_EVAL_MAX.
+ * @param[in] val  The threshold value to check. Callers check finiteness
+ *                 first.
  *
- * @param[in] val  The threshold value to check.
- *
- * @return true if val is finite and within [-THRESHOLD_EVAL_MAX,
- *         +THRESHOLD_EVAL_MAX].
+ * @return true if val is within [-THRESHOLD_EVAL_MAX, +THRESHOLD_EVAL_MAX].
  */
 static inline bool
 threshold_in_range(float val)
 {
-        if (!is_finite(val)) {
-                return false;
-        }
         const float abs_val = (val < 0.0f) ? -val : val;
         return abs_val <= THRESHOLD_EVAL_MAX;
 }
@@ -84,16 +78,12 @@ swap_floats(float *a, float *b)
  *   Insertion sort is used because it is optimal for small arrays (n <= 4),
  *   has no recursive calls, and is simple to verify for correctness.
  *
- * @param[in,out] arr  Array of floats to sort in place. May be NULL.
- * @param[in]     n    Number of elements. No-op if n < 2.
+ * @param[in,out] arr  Array of n floats to sort in place.
+ * @param[in]     n    Number of elements.
  */
 static void
 sort_floats_ascending(float *arr, size_t n)
 {
-        if ((arr == NULL) || (n < 2u)) {
-                return;
-        }
-
         for (size_t i = 1u; i < n; i++) {
                 size_t j = i;
                 while ((j > 0u) && (arr[j - 1u] > arr[j])) {
@@ -561,13 +551,14 @@ threshold_plan_build(threshold_plan_t *plan, const threshold_config_t *config)
                 plan->hi = config->hi;
                 plan->hihi = NAN;
                 break;
-        case THRESHOLD_TYPE_DISCRETE_TRIP:
+        default:
+                /* THRESHOLD_TYPE_DISCRETE_TRIP: the validation switch above
+                 * has already rejected every other value. */
                 plan->lolo = NAN;
                 plan->lo = NAN;
                 plan->hi = NAN;
                 plan->hihi = config->hihi;
                 break;
-        default: return THRESHOLD_STATUS_INVALID_ARG;
         }
 
         plan->valid = true;

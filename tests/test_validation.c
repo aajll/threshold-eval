@@ -306,6 +306,180 @@ TEST_CASE(test_plan_build_neg_inf_epsilon_fails)
         TEST_ASSERT_FALSE(plan.valid);
 }
 
+/* ================ Per-field validation matrix ============================= */
+
+/* Field indices into the per-type tables below. */
+enum {
+        FIELD_LOLO,
+        FIELD_LO,
+        FIELD_HI,
+        FIELD_HIHI,
+        FIELD_COUNT
+};
+
+/* A valid, ordered value for each field. */
+static const float field_value[FIELD_COUNT] = {10.0f, 20.0f, 80.0f, 90.0f};
+
+struct type_fields {
+        threshold_type_t type;
+        bool required[FIELD_COUNT];
+};
+
+static const struct type_fields type_fields[] = {
+    {THRESHOLD_TYPE_RANGE, {true, true, true, true}},
+    {THRESHOLD_TYPE_UPPER, {false, false, true, true}},
+    {THRESHOLD_TYPE_LOWER, {true, true, false, false}},
+    {THRESHOLD_TYPE_DISCRETE_WARN, {false, false, true, false}},
+    {THRESHOLD_TYPE_DISCRETE_TRIP, {false, false, false, true}},
+};
+
+static float *
+config_field(threshold_config_t *cfg, size_t field)
+{
+        float *const fields[FIELD_COUNT] = {&cfg->lolo, &cfg->lo, &cfg->hi,
+                                            &cfg->hihi};
+        return fields[field];
+}
+
+/* Valid strict config for a type: required fields set, the rest NAN. */
+static void
+make_valid_config(threshold_config_t *cfg, const struct type_fields *tf)
+{
+        threshold_config_init(cfg);
+        cfg->type = tf->type;
+        cfg->policy = THRESHOLD_POLICY_STRICT_CONFIG;
+        for (size_t f = 0u; f < FIELD_COUNT; f++) {
+                if (tf->required[f]) {
+                        *config_field(cfg, f) = field_value[f];
+                }
+        }
+}
+
+static threshold_status_t
+build_status(const threshold_config_t *cfg)
+{
+        threshold_plan_t plan;
+        const threshold_status_t status = threshold_plan_build(&plan, cfg);
+        TEST_ASSERT_EQUAL(status == THRESHOLD_STATUS_OK, plan.valid);
+        return status;
+}
+
+TEST_CASE(test_plan_build_each_required_field_missing_fails)
+{
+        const float missing[] = {NAN, INFINITY, -INFINITY};
+
+        for (size_t t = 0u; t < sizeof(type_fields) / sizeof(type_fields[0]);
+             t++) {
+                for (size_t f = 0u; f < FIELD_COUNT; f++) {
+                        if (!type_fields[t].required[f]) {
+                                continue;
+                        }
+                        for (size_t m = 0u;
+                             m < sizeof(missing) / sizeof(missing[0]); m++) {
+                                threshold_config_t cfg;
+                                make_valid_config(&cfg, &type_fields[t]);
+                                TEST_ASSERT_EQUAL(THRESHOLD_STATUS_OK,
+                                                  build_status(&cfg));
+                                *config_field(&cfg, f) = missing[m];
+                                TEST_ASSERT_EQUAL(THRESHOLD_STATUS_MISSING,
+                                                  build_status(&cfg));
+                        }
+                }
+        }
+}
+
+TEST_CASE(test_plan_build_each_required_field_out_of_range_fails)
+{
+        const float too_large[] = {2.0f * THRESHOLD_EVAL_MAX,
+                                   -2.0f * THRESHOLD_EVAL_MAX};
+
+        for (size_t t = 0u; t < sizeof(type_fields) / sizeof(type_fields[0]);
+             t++) {
+                for (size_t f = 0u; f < FIELD_COUNT; f++) {
+                        if (!type_fields[t].required[f]) {
+                                continue;
+                        }
+                        for (size_t v = 0u;
+                             v < sizeof(too_large) / sizeof(too_large[0]);
+                             v++) {
+                                threshold_config_t cfg;
+                                make_valid_config(&cfg, &type_fields[t]);
+                                /* Out of range is checked before order. */
+                                cfg.policy = 0u;
+                                *config_field(&cfg, f) = too_large[v];
+                                TEST_ASSERT_EQUAL(THRESHOLD_STATUS_OUT_OF_RANGE,
+                                                  build_status(&cfg));
+                        }
+                }
+        }
+}
+
+TEST_CASE(test_plan_build_each_unused_field_is_extra_when_strict)
+{
+        for (size_t t = 0u; t < sizeof(type_fields) / sizeof(type_fields[0]);
+             t++) {
+                for (size_t f = 0u; f < FIELD_COUNT; f++) {
+                        if (type_fields[t].required[f]) {
+                                continue;
+                        }
+                        threshold_config_t cfg;
+                        make_valid_config(&cfg, &type_fields[t]);
+                        *config_field(&cfg, f) = field_value[f];
+                        TEST_ASSERT_EQUAL(THRESHOLD_STATUS_EXTRA,
+                                          build_status(&cfg));
+
+                        /* Without STRICT_CONFIG the extra field is ignored. */
+                        cfg.policy = 0u;
+                        TEST_ASSERT_EQUAL(THRESHOLD_STATUS_OK,
+                                          build_status(&cfg));
+                }
+        }
+}
+
+TEST_CASE(test_plan_build_upper_lower_reorder)
+{
+        threshold_config_t cfg;
+        threshold_plan_t plan;
+
+        /* LOWER out of order is swapped. */
+        threshold_config_init(&cfg);
+        cfg.type = THRESHOLD_TYPE_LOWER;
+        cfg.policy = THRESHOLD_POLICY_ALLOW_REORDER;
+        cfg.lolo = 20.0f;
+        cfg.lo = 10.0f;
+        TEST_ASSERT_EQUAL(THRESHOLD_STATUS_OK,
+                          threshold_plan_build(&plan, &cfg));
+        TEST_ASSERT_FLOAT_WITHIN(1e-6f, 10.0f, plan.lolo);
+        TEST_ASSERT_FLOAT_WITHIN(1e-6f, 20.0f, plan.lo);
+
+        /* LOWER in order is kept. */
+        cfg.lolo = 10.0f;
+        cfg.lo = 20.0f;
+        TEST_ASSERT_EQUAL(THRESHOLD_STATUS_OK,
+                          threshold_plan_build(&plan, &cfg));
+        TEST_ASSERT_FLOAT_WITHIN(1e-6f, 10.0f, plan.lolo);
+        TEST_ASSERT_FLOAT_WITHIN(1e-6f, 20.0f, plan.lo);
+
+        /* UPPER out of order is swapped. */
+        threshold_config_init(&cfg);
+        cfg.type = THRESHOLD_TYPE_UPPER;
+        cfg.policy = THRESHOLD_POLICY_ALLOW_REORDER;
+        cfg.hi = 90.0f;
+        cfg.hihi = 80.0f;
+        TEST_ASSERT_EQUAL(THRESHOLD_STATUS_OK,
+                          threshold_plan_build(&plan, &cfg));
+        TEST_ASSERT_FLOAT_WITHIN(1e-6f, 80.0f, plan.hi);
+        TEST_ASSERT_FLOAT_WITHIN(1e-6f, 90.0f, plan.hihi);
+
+        /* UPPER in order is kept. */
+        cfg.hi = 80.0f;
+        cfg.hihi = 90.0f;
+        TEST_ASSERT_EQUAL(THRESHOLD_STATUS_OK,
+                          threshold_plan_build(&plan, &cfg));
+        TEST_ASSERT_FLOAT_WITHIN(1e-6f, 80.0f, plan.hi);
+        TEST_ASSERT_FLOAT_WITHIN(1e-6f, 90.0f, plan.hihi);
+}
+
 /* ================ Main ==================================================== */
 
 int
@@ -351,6 +525,15 @@ main(void)
                  "test_plan_build_nan_epsilon_fails");
         run_test(test_plan_build_neg_inf_epsilon_fails,
                  "test_plan_build_neg_inf_epsilon_fails");
+
+        run_test(test_plan_build_each_required_field_missing_fails,
+                 "test_plan_build_each_required_field_missing_fails");
+        run_test(test_plan_build_each_required_field_out_of_range_fails,
+                 "test_plan_build_each_required_field_out_of_range_fails");
+        run_test(test_plan_build_each_unused_field_is_extra_when_strict,
+                 "test_plan_build_each_unused_field_is_extra_when_strict");
+        run_test(test_plan_build_upper_lower_reorder,
+                 "test_plan_build_upper_lower_reorder");
 
         fprintf(stdout, "\n=== All tests passed ===\n\n");
         return EXIT_SUCCESS;
