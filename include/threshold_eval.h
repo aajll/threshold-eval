@@ -9,8 +9,7 @@
  * @details
  *   This library provides a configurable, deterministic mechanism for
  *   evaluating measured values against threshold limits (LOLO, LO, HI, HIHI).
- *   It is designed for use in safety-critical embedded systems targeting
- *   IEC 61508 SIL 2 and MISRA C:2012 compliance.
+ *   It is designed for use in safety-critical embedded systems.
  *
  *   Key design principles:
  *   - No dynamic memory allocation
