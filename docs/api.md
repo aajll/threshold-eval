@@ -337,4 +337,4 @@ monitors_poll(struct monitor *mon, const float *samples, unsigned count)
 #endif
 ```
 
-`THRESHOLD_EVAL_VERSION_STRING` is the same string as `THRESHOLD_EVAL_VERSION`. `threshold_eval_version.h` is a deprecated header that includes `threshold_eval.h`, kept so existing includes compile until the next major release.
+`THRESHOLD_EVAL_VERSION_STRING` is the same string as `THRESHOLD_EVAL_VERSION`.

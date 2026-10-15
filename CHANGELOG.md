@@ -14,7 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
-- `threshold_eval.h` defines `THRESHOLD_EVAL_VERSION_MAJOR`, `_MINOR`, `_PATCH`, `THRESHOLD_EVAL_VERSION`, `THRESHOLD_EVAL_VERSION_STRING` and a new `THRESHOLD_EVAL_VERSION_NUMBER` (`long`, `MAJOR * 10000 + MINOR * 100 + PATCH`), so a copied-in header carries its version. `threshold_eval_version.h` is no longer generated; it is installed as a deprecated header that includes `threshold_eval.h`. Meson fails to configure when the header and `project(version:)` disagree, and the build needs Meson 0.57 or later.
+- `threshold_eval.h` defines `THRESHOLD_EVAL_VERSION_MAJOR`, `_MINOR`, `_PATCH`, `THRESHOLD_EVAL_VERSION`, `THRESHOLD_EVAL_VERSION_STRING` and a new `THRESHOLD_EVAL_VERSION_NUMBER` (`long`, `MAJOR * 10000 + MINOR * 100 + PATCH`), so a copied-in header carries its version. Meson fails to configure when the header and `project(version:)` disagree, and the build needs Meson 0.57 or later.
 - CI gates line and branch coverage at 100 %, up from 80 % line and 70 % branch.
 - CI installs Meson, Ninja and gcovr with `uv` instead of `pip`, and the Meson files and tests carry SPDX licence headers.
 - The README is a short landing page. Installation, configuration and cross builds are in `docs/integration.md`, the API reference and recipes in `docs/api.md`, and the plan model, comparison rules, floating-point limits and verification in the new `docs/design.md`. A documentation test compiles every C example against the public headers.
@@ -24,6 +24,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Removed
 
 - The Sphinx and Doxygen site under `docs/sphinx/` and its CI job. `docs/api.md` is the API reference.
+- `threshold_eval_version.h`. `threshold_eval.h` defines the version macros.
 
 ## [1.2.0] - 2026-06-26
 

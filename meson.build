@@ -49,7 +49,6 @@ threshold_eval_lib = static_library(
 install_headers(
   'include/threshold_eval.h',
   'include/threshold_eval_conf.h',
-  'include/threshold_eval_version.h',
   subdir: 'threshold_eval',
 )
 
