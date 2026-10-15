@@ -46,6 +46,3 @@
 # Meson build output
 build/
 build-*/
-
-# Documentation build output
-docs/_build/

@@ -16,7 +16,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - CI gates line and branch coverage at 100 %, up from 80 % line and 70 % branch.
 - CI installs Meson, Ninja and gcovr with `uv` instead of `pip`, and the Meson files and tests carry SPDX licence headers.
+- The README is a short landing page. Installation, configuration and cross builds are in `docs/integration.md`, the API reference and recipes in `docs/api.md`, and the plan model, comparison rules, floating-point limits and verification in the new `docs/design.md`. A documentation test compiles every C example against the public headers.
+- `CONTRIBUTING.md` and `AGENTS.md` describe the uv, clang-format and misch workflow and the validation and evaluation invariants.
 - Checks that could not be reached are removed: the finiteness check inside the range check (callers check finiteness first), the argument guard of the internal sort, and the unknown-type branch of the second switch in `threshold_plan_build`. Results are unchanged.
+
+### Removed
+
+- The Sphinx and Doxygen site under `docs/sphinx/` and its CI job. `docs/api.md` is the API reference.
 
 ## [1.2.0] - 2026-06-26
 
