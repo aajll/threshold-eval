@@ -40,7 +40,7 @@ scripts/format.sh --fix    # rewrite in place
 
 ### 1.2 Notes
 
-- `meson setup` generates `threshold_eval_version.h` into the build directory; `threshold_eval.h` does not include it.
+- `include/threshold_eval.h` defines the version macros, and `meson setup` fails when they differ from `project(version:)`, so a release updates both. `include/threshold_eval_version.h` is a deprecated header that includes `threshold_eval.h`.
 - The build produces only a static library, installed as `libthreshold_eval.a` with headers under `threshold_eval/` and `threshold_eval.pc`. The only Meson option is `build_tests`.
 - `THRESHOLD_EVAL_MAX` and `THRESHOLD_EVAL_EPSILON` are read only in `src/threshold_eval.c`, so they take effect only as `-D` definitions for the library build. A definition before the include in a caller changes nothing.
 

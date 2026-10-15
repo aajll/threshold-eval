@@ -43,6 +43,33 @@ extern "C" {
 
 #include "threshold_eval_conf.h"
 
+/* ================ VERSION ================================================= */
+
+/**
+ * @name Version
+ * @brief Release of this header, for diagnostics and @c #if checks.
+ *
+ * @details
+ *    @c THRESHOLD_EVAL_VERSION_NUMBER is @c MAJOR*10000 @c + @c MINOR*100
+ *    @c + @c PATCH with type @c long, so it cannot overflow where @c int is
+ *    16 bits. The Meson build fails to configure when these values differ
+ *    from the project version.
+ * @{
+ */
+/* cppcheck-suppress-begin misra-c2012-2.5 ; @deviation Public version macros
+ * for consumer diagnostics and #if checks; the library does not use them. */
+#define THRESHOLD_EVAL_VERSION_MAJOR  1
+#define THRESHOLD_EVAL_VERSION_MINOR  2
+#define THRESHOLD_EVAL_VERSION_PATCH  0
+#define THRESHOLD_EVAL_VERSION        "1.2.0"
+#define THRESHOLD_EVAL_VERSION_STRING THRESHOLD_EVAL_VERSION
+#define THRESHOLD_EVAL_VERSION_NUMBER                                          \
+        ((THRESHOLD_EVAL_VERSION_MAJOR * 10000L)                               \
+         + (THRESHOLD_EVAL_VERSION_MINOR * 100L)                               \
+         + THRESHOLD_EVAL_VERSION_PATCH)
+/* cppcheck-suppress-end misra-c2012-2.5 ; @deviation As above. */
+/** @} */
+
 /* ================ TYPEDEFS ================================================ */
 
 /**

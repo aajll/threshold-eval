@@ -316,3 +316,25 @@ monitors_poll(struct monitor *mon, const float *samples, unsigned count)
         return tripped;
 }
 ```
+
+## Version
+
+`threshold_eval.h` defines the release it belongs to, so a copied-in header still identifies itself:
+
+<!-- snippet: skip -->
+```c
+#define THRESHOLD_EVAL_VERSION_MAJOR 1
+#define THRESHOLD_EVAL_VERSION_MINOR 2
+#define THRESHOLD_EVAL_VERSION_PATCH 0
+#define THRESHOLD_EVAL_VERSION "1.2.0"
+```
+
+`THRESHOLD_EVAL_VERSION_NUMBER` is `MAJOR * 10000 + MINOR * 100 + PATCH` as a `long`, so it holds any version where `int` is 16 bits. Compare it in the preprocessor to require a minimum release:
+
+```c
+#if THRESHOLD_EVAL_VERSION_NUMBER < 10200L
+#error "threshold_eval 1.2.0 or later is required"
+#endif
+```
+
+`THRESHOLD_EVAL_VERSION_STRING` is the same string as `THRESHOLD_EVAL_VERSION`. `threshold_eval_version.h` is a deprecated header that includes `threshold_eval.h`, kept so existing includes compile until the next major release.
