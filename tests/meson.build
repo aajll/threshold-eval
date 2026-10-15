@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MIT
+
 # Test executables for threshold-eval
 
 test_config = executable(

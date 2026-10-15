@@ -1,4 +1,6 @@
 /**
+ * SPDX-License-Identifier: MIT
+ *
  * @file test_edge_cases.c
  * @brief Unit tests for edge cases identified during pre-release audit.
  *
@@ -7,8 +9,8 @@
  * plan rebuild after failure, and DEESCALATE_WARN across threshold types.
  */
 
-#include "threshold_eval.h"
 #include "test_harness.h"
+#include "threshold_eval.h"
 
 /* ================ Invalid enum type tests ================================= */
 

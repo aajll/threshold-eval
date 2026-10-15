@@ -1,10 +1,12 @@
 /**
+ * SPDX-License-Identifier: MIT
+ *
  * @file test_threshold_ordering.c
  * @brief Unit tests for threshold ordering edge cases.
  */
 
-#include "threshold_eval.h"
 #include "test_harness.h"
+#include "threshold_eval.h"
 
 /* ================ Threshold ordering edge cases =========================== */
 

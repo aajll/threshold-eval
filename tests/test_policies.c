@@ -1,10 +1,12 @@
 /**
+ * SPDX-License-Identifier: MIT
+ *
  * @file test_policies.c
  * @brief Unit tests for policy flag combinations and invalid sample handling.
  */
 
-#include "threshold_eval.h"
 #include "test_harness.h"
+#include "threshold_eval.h"
 
 /* ================ Policy flag combination tests ============================
  */

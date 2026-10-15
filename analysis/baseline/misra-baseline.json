@@ -1,0 +1,53 @@
+{
+  "schema": "misch/baseline@2",
+  "fingerprints": {
+    "14c15161c7f2": {
+      "rule_id": "misra-c2012-2.4",
+      "file": "include/threshold_eval.h",
+      "message": "misra violation (use --rule-texts=<file> to get proper output)",
+      "count": 1
+    },
+    "1958c11d8891": {
+      "rule_id": "misra-c2012-8.7",
+      "file": "src/threshold_eval.c",
+      "message": "misra violation (use --rule-texts=<file> to get proper output)",
+      "count": 7
+    },
+    "20785028b9d5": {
+      "rule_id": "misra-c2012-2.3",
+      "file": "include/threshold_eval.h",
+      "message": "misra violation (use --rule-texts=<file> to get proper output)",
+      "count": 1
+    },
+    "3fc9c9449271": {
+      "rule_id": "misra-c2012-2.5",
+      "file": "include/threshold_eval.h",
+      "message": "misra violation (use --rule-texts=<file> to get proper output)",
+      "count": 1
+    },
+    "4c5ec2051de9": {
+      "rule_id": "misra-c2012-15.5",
+      "file": "src/threshold_eval.c",
+      "message": "misra violation (use --rule-texts=<file> to get proper output)",
+      "count": 76
+    },
+    "855c377687f1": {
+      "rule_id": "misra-c2012-10.8",
+      "file": "src/threshold_eval.c",
+      "message": "misra violation (use --rule-texts=<file> to get proper output)",
+      "count": 1
+    },
+    "8d3200a63a63": {
+      "rule_id": "misra-c2012-10.4",
+      "file": "src/threshold_eval.c",
+      "message": "misra violation (use --rule-texts=<file> to get proper output)",
+      "count": 10
+    },
+    "fe0e687f6c7b": {
+      "rule_id": "misra-c2012-12.1",
+      "file": "src/threshold_eval.c",
+      "message": "misra violation (use --rule-texts=<file> to get proper output)",
+      "count": 10
+    }
+  }
+}

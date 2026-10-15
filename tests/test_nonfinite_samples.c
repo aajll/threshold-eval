@@ -1,4 +1,6 @@
 /**
+ * SPDX-License-Identifier: MIT
+ *
  * @file test_nonfinite_samples.c
  * @brief Unit tests for non-finite sample handling across all plan types.
  *
@@ -8,8 +10,8 @@
  * prev.
  */
 
-#include "threshold_eval.h"
 #include "test_harness.h"
+#include "threshold_eval.h"
 
 /* ================ NaN samples: DISCRETE_WARN ============================== */
 
