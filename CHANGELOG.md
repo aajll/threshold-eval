@@ -25,6 +25,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - The Sphinx and Doxygen site under `docs/sphinx/` and its CI job. `docs/api.md` is the API reference.
 - `threshold_eval_version.h`. `threshold_eval.h` defines the version macros.
+- The `extern "C"` guards in `threshold_eval.h`. The library is C11 only and its headers make no C++ claim.
 
 ## [1.2.0] - 2026-06-26
 
