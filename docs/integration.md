@@ -56,8 +56,6 @@ The install contains the static archive `libthreshold_eval.a`, the headers in a 
 #include <threshold_eval/threshold_eval.h>
 ```
 
-`threshold_eval_version.h` is installed beside it as a deprecated header that includes `threshold_eval.h`.
-
 ## Configuration
 
 `threshold_eval_conf.h` holds two options, each behind an `#ifndef` guard, so a `-D` definition replaces the shipped default. They are described in [api.md](api.md#configuration-macros).

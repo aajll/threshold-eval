@@ -7,7 +7,6 @@
 
 #include "test_harness.h"
 #include "threshold_eval.h"
-#include "threshold_eval_version.h"
 
 /* ================ threshold_config_init tests ============================= */
 
@@ -36,8 +35,7 @@ TEST_CASE(test_config_init_null_returns_error)
 
 /* ================ Main ==================================================== */
 
-/* The deprecated version header still exposes the macros from
- * threshold_eval.h. */
+/* The version number agrees with its parts. */
 TEST_CASE(test_version_macros)
 {
         TEST_ASSERT(THRESHOLD_EVAL_VERSION_NUMBER
