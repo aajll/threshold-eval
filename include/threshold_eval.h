@@ -32,10 +32,6 @@
 #ifndef THRESHOLD_EVAL_H_
 #define THRESHOLD_EVAL_H_
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /* ================ INCLUDES ================================================ */
 
 #include <stdbool.h>
@@ -549,9 +545,5 @@ const char *threshold_type_name(threshold_type_t type);
  * @return Pointer to a static description string. Never returns NULL.
  */
 const char *threshold_status_str(threshold_status_t status);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* THRESHOLD_EVAL_H_ */
