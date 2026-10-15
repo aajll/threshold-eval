@@ -1,10 +1,12 @@
 /**
+ * SPDX-License-Identifier: MIT
+ *
  * @file test_validation.c
  * @brief Unit tests for threshold_plan_build validation.
  */
 
-#include "threshold_eval.h"
 #include "test_harness.h"
+#include "threshold_eval.h"
 
 /* ================ threshold_plan_build validation tests =================== */
 

@@ -1,10 +1,12 @@
 /**
+ * SPDX-License-Identifier: MIT
+ *
  * @file test_config.c
  * @brief Unit tests for threshold_config_init.
  */
 
-#include "threshold_eval.h"
 #include "test_harness.h"
+#include "threshold_eval.h"
 
 /* ================ threshold_config_init tests ============================= */
 

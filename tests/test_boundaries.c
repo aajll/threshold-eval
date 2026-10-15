@@ -1,10 +1,12 @@
 /**
+ * SPDX-License-Identifier: MIT
+ *
  * @file test_boundaries.c
  * @brief Unit tests for boundary conditions and epsilon dead-bands.
  */
 
-#include "threshold_eval.h"
 #include "test_harness.h"
+#include "threshold_eval.h"
 
 /* ================ Epsilon boundary tests ================================== */
 

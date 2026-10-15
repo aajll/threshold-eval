@@ -1,10 +1,12 @@
 /**
+ * SPDX-License-Identifier: MIT
+ *
  * @file test_helpers.c
  * @brief Unit tests for helper functions and main test runner.
  */
 
-#include "threshold_eval.h"
 #include "test_harness.h"
+#include "threshold_eval.h"
 
 /* ================ Helper function tests =================================== */
 
@@ -97,27 +99,21 @@ TEST_CASE(test_status_str_returns_strings)
         TEST_ASSERT_EQUAL_STRING(
             "Required threshold is missing",
             threshold_status_str(THRESHOLD_STATUS_MISSING));
-        TEST_ASSERT_EQUAL_STRING(
-            "Thresholds are not in monotonic order",
-            threshold_status_str(THRESHOLD_STATUS_ORDER));
-        TEST_ASSERT_EQUAL_STRING(
-            "Extra thresholds provided for plan type",
-            threshold_status_str(THRESHOLD_STATUS_EXTRA));
-        TEST_ASSERT_EQUAL_STRING(
-            "Unknown status",
-            threshold_status_str((threshold_status_t)-99));
+        TEST_ASSERT_EQUAL_STRING("Thresholds are not in monotonic order",
+                                 threshold_status_str(THRESHOLD_STATUS_ORDER));
+        TEST_ASSERT_EQUAL_STRING("Extra thresholds provided for plan type",
+                                 threshold_status_str(THRESHOLD_STATUS_EXTRA));
+        TEST_ASSERT_EQUAL_STRING("Unknown status",
+                                 threshold_status_str((threshold_status_t)-99));
 }
 
 TEST_CASE(test_all_status_codes_have_strings)
 {
         /* Verify every defined status code maps to a non-empty string. */
         const threshold_status_t all_status[] = {
-                THRESHOLD_STATUS_OK,
-                THRESHOLD_STATUS_INVALID_ARG,
-                THRESHOLD_STATUS_OUT_OF_RANGE,
-                THRESHOLD_STATUS_MISSING,
-                THRESHOLD_STATUS_ORDER,
-                THRESHOLD_STATUS_EXTRA,
+            THRESHOLD_STATUS_OK,           THRESHOLD_STATUS_INVALID_ARG,
+            THRESHOLD_STATUS_OUT_OF_RANGE, THRESHOLD_STATUS_MISSING,
+            THRESHOLD_STATUS_ORDER,        THRESHOLD_STATUS_EXTRA,
         };
         const size_t count = sizeof(all_status) / sizeof(all_status[0]);
 

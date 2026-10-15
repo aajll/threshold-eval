@@ -10,10 +10,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - CI cross-builds the library with TI C2000 CGT 22.6.2 and 25.11.1 under the COFF and EABI object formats, with warnings as errors.
 - Validation tests covering every threshold field of every plan type for missing, out-of-range and extra values; `ALLOW_REORDER` tests for upper and lower plans; and hysteresis tests for an invalid plan and for a previous severity the plan type does not use.
+- CI runs a MISRA C:2023 analysis with `misch` against a baseline in `analysis/baseline/` that records the existing findings, and checks formatting with the clang-format release pinned in `scripts/format.sh`.
 
 ### Changed
 
 - CI gates line and branch coverage at 100 %, up from 80 % line and 70 % branch.
+- CI installs Meson, Ninja and gcovr with `uv` instead of `pip`, and the Meson files and tests carry SPDX licence headers.
 - Checks that could not be reached are removed: the finiteness check inside the range check (callers check finiteness first), the argument guard of the internal sort, and the unknown-type branch of the second switch in `threshold_plan_build`. Results are unchanged.
 
 ## [1.2.0] - 2026-06-26

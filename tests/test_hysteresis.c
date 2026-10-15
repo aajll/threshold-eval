@@ -1,10 +1,12 @@
 /**
+ * SPDX-License-Identifier: MIT
+ *
  * @file test_hysteresis.c
  * @brief Unit tests for threshold_plan_eval_hys.
  */
 
-#include "threshold_eval.h"
 #include "test_harness.h"
+#include "threshold_eval.h"
 
 /* ================ Hysteresis tests ======================================== */
 
