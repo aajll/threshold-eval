@@ -1,245 +1,78 @@
 # threshold-eval
 
 [![CI](https://github.com/aajll/threshold-eval/actions/workflows/ci.yml/badge.svg)](https://github.com/aajll/threshold-eval/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-Configurable threshold evaluation library for classifying sampled values against validated warning/trip limits with deterministic, policy-driven behaviour.
+**A C11 library that classifies a sampled value as OK, warning or trip against validated LOLO, LO, HI and HIHI limits, with a configured response to NaN and infinite samples.**
 
-## Features
+## Quick start
 
-- **Five evaluation types**: Full range (LOLO/LO/HI/HIHI), upper-only, lower-only, discrete warning, and discrete trip to match any monitoring pattern
-- **Policy-driven invalid-sample handling**: Configurable per-plan response to NaN/Inf inputs — failsafe trip, de-escalate to warning, or ignore
-- **Hysteresis support**: Prevents threshold chatter when a signal oscillates near a boundary, with caller-controlled state
-- **Epsilon tolerance**: Configurable boundary dead-band protects against noise-induced false transitions
-- **Threshold reordering**: Optional automatic sort of out-of-order thresholds at plan-build time
-- **Strict configuration mode**: Rejects misconfigured plans (missing thresholds, wrong ordering, extra fields) at build time, not runtime
-- **Stateless evaluation**: `threshold_plan_eval()` is a pure function with no hidden state making it safe to call from any context
-- **Auditable design**: Small codebase with static allocation, explicit contracts, and a unit-tested public API
-
-## Installation
-
-### As a Meson subproject
-
-```meson
-threshold_eval_dep = dependency('threshold_eval', fallback: ['threshold_eval', 'threshold_eval_dep'])
-```
-
-The project also exports `meson.override_dependency('threshold_eval', ...)`
-so downstream Meson builds can resolve the subproject dependency by name.
-
-For subproject builds, include the public header directly:
+Copy `include/threshold_eval.h`, `include/threshold_eval_conf.h` and `src/threshold_eval.c` into your project. For a Meson subproject or an installed `pkg-config` package, see the [integration guide](docs/integration.md).
 
 ```c
-#include "threshold_eval.h"
-```
+#include <stdio.h>
 
-`threshold_eval.h` includes `threshold_eval_conf.h` automatically, so you
-can configure the library with a single include. If you prefer to keep
-configuration in a separate file, you can include `threshold_eval_conf.h`
-first:
-
-```c
-#define THRESHOLD_EVAL_MAX 1000000.0f
-#include "threshold_eval_conf.h"
-#include "threshold_eval.h"
-```
-
-### As an installed dependency
-
-If the library is installed system-wide, include the namespaced header path:
-
-```c
-#include <threshold_eval/threshold_eval.h>
-```
-
-The public configuration header is also installed as:
-
-```c
-#include <threshold_eval/threshold_eval_conf.h>
-```
-
-If `pkg-config` files are installed in your environment, downstream builds can
-also discover the package as `threshold_eval`.
-
-The generated version header is available as `threshold_eval_version.h` in the
-build tree and as `<threshold_eval/threshold_eval_version.h>` after install.
-
-## Quick Start
-
-```c
-#include "threshold_eval.h"
-
-int main(void)
+int
+main(void)
 {
         threshold_config_t cfg;
         threshold_plan_t plan;
 
-        /* Initialise config with safe defaults */
-        threshold_config_init(&cfg);
+        /* Unused thresholds NaN, failsafe policy, default epsilon. */
+        (void)threshold_config_init(&cfg);
 
-        /* Configure a full-range voltage monitor (V) */
-        cfg.type   = THRESHOLD_TYPE_RANGE;
-        cfg.lolo   = 10.5f;   /* under-voltage trip    */
-        cfg.lo     = 11.0f;   /* under-voltage warning */
-        cfg.hi     = 14.5f;   /* over-voltage warning  */
-        cfg.hihi   = 15.0f;   /* over-voltage trip     */
-        cfg.policy = THRESHOLD_POLICY_FAILSAFE;
+        /* A 12 V supply monitor. */
+        cfg.type = THRESHOLD_TYPE_RANGE;
+        cfg.lolo = 10.5f; /* under-voltage trip */
+        cfg.lo = 11.0f;   /* under-voltage warning */
+        cfg.hi = 14.5f;   /* over-voltage warning */
+        cfg.hihi = 15.0f; /* over-voltage trip */
 
-        /* Build and validate the plan once at startup */
+        /* Validate once, at start-up. */
         if (threshold_plan_build(&plan, &cfg) != THRESHOLD_STATUS_OK) {
-                /* Handle configuration error */
                 return 1;
         }
 
-        /* Evaluate a sample at runtime (pure function, no side effects) */
-        float voltage = read_voltage();
-        threshold_severity_t sev = threshold_plan_eval(&plan, voltage);
-
-        if (threshold_severity_is_trip(sev)) {
-                trigger_protection();
-        } else if (threshold_severity_is_warn(sev)) {
-                raise_alarm();
+        /* Prints OK, WARN_HIGH, TRIP_HIGH, TRIP_LOW. */
+        const float samples[] = {12.6f, 14.8f, 15.2f, 10.0f};
+        for (unsigned i = 0u; i < 4u; ++i) {
+                threshold_severity_t sev = threshold_plan_eval(&plan, samples[i]);
+                printf("%s\n", threshold_severity_name(sev));
         }
-
         return 0;
 }
 ```
 
-## Building
+## Description
 
-```sh
-# Library only (release)
-meson setup build --buildtype=release -Dbuild_tests=false
-meson compile -C build
+A plan is built once from a configuration and then evaluated against each sample. Building validates every limit, so evaluation has no error path other than a non-finite sample.
 
-# With unit tests
-meson setup build --buildtype=debug -Dbuild_tests=true
-meson compile -C build
-meson test -C build --verbose
-```
+- Five plan types: full range (LOLO, LO, HI, HIHI), upper only, lower only, a single warning limit, and a single trip limit
+- Policy flags choose what a NaN or infinite sample produces (trip, warning, OK or `INVALID`) and how strictly a configuration is checked
+- An epsilon dead-band at each limit and caller-tracked hysteresis stop a noisy signal flickering between levels
+- Evaluation is a pure function of the plan and the sample: no state, no allocation, safe from any context that can read the plan
+- Tests under ASan and UBSan with 100% line and branch coverage, and MISRA C:2023 analysis with [`misch`](https://pypi.org/project/misch/)
 
-## API Reference
+## Validated toolchains
 
-### Configuration Macros
+| Toolchain               | Target                        | Validation                          |
+| ----------------------- | ----------------------------- | ----------------------------------- |
+| GCC                     | x86_64 Linux                  | All tests under ASan and UBSan      |
+| DSP vendor C11 compiler | 16-bit MAU (`CHAR_BIT == 16`) | Library compile, two object formats |
 
-| Macro | Description |
-|-------|-------------|
-| `THRESHOLD_EVAL_MAX` | Maximum absolute threshold value (configured via `threshold_eval_conf.h`, default: 4000000.0) |
-| `THRESHOLD_EVAL_EPSILON` | Default boundary comparison epsilon (configured via `threshold_eval_conf.h`, default: 1e-3) |
+Target linking and execution belong to the consuming firmware. See [cross builds](docs/integration.md#cross-builds).
 
-### Single-Include Override
+## Documentation
 
-Define macros before including `threshold_eval.h` — it pulls in the
-configuration header automatically:
+- [Integration guide](docs/integration.md) — copy-in, Meson subproject, installed package, configuration, building, and cross builds
+- [API reference](docs/api.md) — configuration, plan building, evaluation, hysteresis, helpers, and recipes
+- [Design](docs/design.md) — the plan model, validation, the comparison rules, floating-point limits, failure behaviour, and verification
+- [Changelog](CHANGELOG.md) — release history
 
-```c
-#define THRESHOLD_EVAL_MAX     1000000.0f
-#define THRESHOLD_EVAL_EPSILON 0.01f
-#include "threshold_eval.h"
-```
+## Contributing
 
-### Type Definitions
+Read [CONTRIBUTING.md](CONTRIBUTING.md) before you open a pull request. Report security issues as described in [SECURITY.md](.github/SECURITY.md).
 
-| Type | Description |
-|------|-------------|
-| `threshold_type_t` | Plan type enum (NONE, RANGE, UPPER, LOWER, DISCRETE_WARN, DISCRETE_TRIP) |
-| `threshold_policy_t` | Policy flag enum (FAILSAFE_TRIP, DEESCALATE_WARN, IGNORE_INVALID, STRICT_CONFIG, ALLOW_REORDER) |
-| `threshold_severity_t` | Evaluation result enum (OK, WARN_LOW, WARN_HIGH, TRIP_LOW, TRIP_HIGH, INVALID) |
-| `threshold_status_t` | Function return status enum |
-| `threshold_config_t` | User-populated configuration structure |
-| `threshold_plan_t` | Validated evaluation plan (output of `threshold_plan_build()`) |
+## License
 
-### Composite Policy Macros
-
-| Macro | Description |
-|-------|-------------|
-| `THRESHOLD_POLICY_FAILSAFE` | `FAILSAFE_TRIP \| STRICT_CONFIG` — recommended for safety-critical parameters |
-| `THRESHOLD_POLICY_OPERATIONAL` | `DEESCALATE_WARN \| ALLOW_REORDER` — for informational parameters requiring continued operation |
-
-### Core Functions
-
-```c
-threshold_status_t   threshold_config_init(threshold_config_t *config);
-threshold_status_t   threshold_plan_build(threshold_plan_t *plan,
-                                          const threshold_config_t *config);
-threshold_severity_t threshold_plan_eval(const threshold_plan_t *plan,
-                                         float sample);
-threshold_severity_t threshold_plan_eval_hys(const threshold_plan_t *plan,
-                                             float sample, float hysteresis,
-                                             threshold_severity_t prev);
-```
-
-### Severity Classification Helpers
-
-```c
-static inline bool threshold_severity_is_warn(threshold_severity_t sev);
-static inline bool threshold_severity_is_trip(threshold_severity_t sev);
-static inline bool threshold_severity_is_low(threshold_severity_t sev);
-static inline bool threshold_severity_is_high(threshold_severity_t sev);
-```
-
-### Diagnostic String Functions
-
-```c
-const char *threshold_severity_name(threshold_severity_t sev);
-const char *threshold_type_name(threshold_type_t type);
-const char *threshold_status_str(threshold_status_t status);
-```
-
-## Use Cases
-
-- **Process variable monitoring**: Classify a sensor reading against LOLO/LO/HI/HIHI band limits
-  ```c
-  cfg.type = THRESHOLD_TYPE_RANGE;
-  cfg.lolo = 0.5f; cfg.lo = 1.0f; cfg.hi = 4.0f; cfg.hihi = 4.5f;
-  threshold_plan_build(&plan, &cfg);
-  threshold_severity_t sev = threshold_plan_eval(&plan, pressure);
-  ```
-
-- **Over-temperature protection**: Monitor only the high side with a two-level trip chain
-  ```c
-  cfg.type = THRESHOLD_TYPE_UPPER;
-  cfg.hi = 85.0f; cfg.hihi = 95.0f;
-  threshold_plan_build(&plan, &cfg);
-  ```
-
-- **Sensor failure handling**: Route NaN/Inf inputs to a deterministic protective action
-  ```c
-  cfg.policy = THRESHOLD_POLICY_FAILSAFE_TRIP;
-  /* NaN sample -> THRESHOLD_SEV_TRIP_HIGH, drives the same path as a real trip */
-  ```
-
-- **Chatter prevention with hysteresis**: Prevent rapid warn/ok/warn transitions near a boundary
-  ```c
-  static threshold_severity_t prev = THRESHOLD_SEV_OK;
-  threshold_severity_t current =
-      threshold_plan_eval_hys(&plan, sample, 2.0f, prev);
-  prev = current;
-  ```
-
-- **Custom configuration**: Override defaults via a separate config file
-  ```c
-  #define THRESHOLD_EVAL_MAX     1000000.0f
-  #define THRESHOLD_EVAL_EPSILON 0.01f
-  #include "threshold_eval_conf.h"
-  #include "threshold_eval.h"
-  ```
-
-- **Discrete digital threshold**: Single-threshold warning for a computed ratio or percentage
-  ```c
-  cfg.type = THRESHOLD_TYPE_DISCRETE_WARN;
-  cfg.hi = 80.0f; /* warn if imbalance > 80% */
-  threshold_plan_build(&plan, &cfg);
-  ```
-
-## Notes
-
-| Topic | Note |
-|-------|-------|
-| **Threshold range** | All thresholds must satisfy `\|value\| <= THRESHOLD_EVAL_MAX` (default 4,000,000) |
-| **Monotonic order** | LOLO <= LO <= HI <= HIHI; enforced by STRICT_CONFIG or corrected by ALLOW_REORDER |
-| **Epsilon** | Applied as dead-band at boundaries; set to 0.0f to disable; per-plan via `threshold_config_t.epsilon` |
-| **Non-finite samples** | NaN and Inf are detected before comparison; result driven entirely by policy flags |
-| **Hysteresis state** | The caller must track `prev` between calls; `threshold_plan_eval_hys()` is stateless |
-| **Thread safety** | `threshold_plan_eval()` is a pure function and is safe for concurrent callers sharing a read-only plan; `threshold_plan_build()` must not be called concurrently on the same plan |
-| **Plan validity** | A plan must not be used for evaluation unless `plan.valid == true`; always check the return of `threshold_plan_build()` |
-| **No dynamic memory** | No heap allocation; all structures are caller-owned and can be stack- or statically-allocated |
+MIT. See [LICENSE](LICENSE).
