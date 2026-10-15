@@ -24,7 +24,7 @@ Keep both headers in the same directory, because `threshold_eval.h` includes `th
 #include "threshold_eval.h"
 ```
 
-`threshold_eval_version.h` exists only in Meson builds, which generate it.
+`threshold_eval.h` defines the version macros described in [api.md](api.md#version).
 
 ## Meson subproject
 
@@ -54,10 +54,9 @@ The install contains the static archive `libthreshold_eval.a`, the headers in a 
 <!-- snippet: skip -->
 ```c
 #include <threshold_eval/threshold_eval.h>
-#include <threshold_eval/threshold_eval_version.h>
 ```
 
-`threshold_eval_version.h` defines `THRESHOLD_EVAL_VERSION` as the version string and `THRESHOLD_EVAL_VERSION_MAJOR`, `THRESHOLD_EVAL_VERSION_MINOR` and `THRESHOLD_EVAL_VERSION_PATCH` as integers. `THRESHOLD_EVAL_VERSION_STRING` repeats the version, assembled from the three numbers.
+`threshold_eval_version.h` is installed beside it as a deprecated header that includes `threshold_eval.h`.
 
 ## Configuration
 

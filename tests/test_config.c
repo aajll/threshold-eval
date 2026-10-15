@@ -7,6 +7,7 @@
 
 #include "test_harness.h"
 #include "threshold_eval.h"
+#include "threshold_eval_version.h"
 
 /* ================ threshold_config_init tests ============================= */
 
@@ -35,6 +36,17 @@ TEST_CASE(test_config_init_null_returns_error)
 
 /* ================ Main ==================================================== */
 
+/* The deprecated version header still exposes the macros from
+ * threshold_eval.h. */
+TEST_CASE(test_version_macros)
+{
+        TEST_ASSERT(THRESHOLD_EVAL_VERSION_NUMBER
+                    == ((THRESHOLD_EVAL_VERSION_MAJOR * 10000L)
+                        + (THRESHOLD_EVAL_VERSION_MINOR * 100L)
+                        + THRESHOLD_EVAL_VERSION_PATCH));
+        TEST_ASSERT(THRESHOLD_EVAL_VERSION_STRING[0] != '\0');
+}
+
 int
 main(void)
 {
@@ -44,6 +56,7 @@ main(void)
                  "test_config_init_sets_defaults");
         run_test(test_config_init_null_returns_error,
                  "test_config_init_null_returns_error");
+        run_test(test_version_macros, "test_version_macros");
 
         fprintf(stdout, "\n=== All tests passed ===\n\n");
         return EXIT_SUCCESS;

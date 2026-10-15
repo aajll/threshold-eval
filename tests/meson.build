@@ -6,56 +6,56 @@ test_config = executable(
   'test_config',
   files('test_config.c'),
   dependencies: [threshold_eval_dep],
-  include_directories: [public_headers, generated_headers],
+  include_directories: public_headers,
 )
 
 test_validation = executable(
   'test_validation',
   files('test_validation.c'),
   dependencies: [threshold_eval_dep],
-  include_directories: [public_headers, generated_headers],
+  include_directories: public_headers,
 )
 
 test_evaluation = executable(
   'test_evaluation',
   files('test_evaluation.c'),
   dependencies: [threshold_eval_dep],
-  include_directories: [public_headers, generated_headers],
+  include_directories: public_headers,
 )
 
 test_hysteresis = executable(
   'test_hysteresis',
   files('test_hysteresis.c'),
   dependencies: [threshold_eval_dep],
-  include_directories: [public_headers, generated_headers],
+  include_directories: public_headers,
 )
 
 test_policies = executable(
   'test_policies',
   files('test_policies.c'),
   dependencies: [threshold_eval_dep],
-  include_directories: [public_headers, generated_headers],
+  include_directories: public_headers,
 )
 
 test_boundaries = executable(
   'test_boundaries',
   files('test_boundaries.c'),
   dependencies: [threshold_eval_dep],
-  include_directories: [public_headers, generated_headers],
+  include_directories: public_headers,
 )
 
 test_helpers = executable(
   'test_helpers',
   files('test_helpers.c'),
   dependencies: [threshold_eval_dep],
-  include_directories: [public_headers, generated_headers],
+  include_directories: public_headers,
 )
 
 test_threshold_ordering = executable(
   'test_threshold_ordering',
   files('test_threshold_ordering.c'),
   dependencies: [threshold_eval_dep],
-  include_directories: [public_headers, generated_headers],
+  include_directories: public_headers,
 )
 
 # Individual test cases
@@ -72,7 +72,7 @@ test_edge_cases = executable(
   'test_edge_cases',
   files('test_edge_cases.c'),
   dependencies: [threshold_eval_dep],
-  include_directories: [public_headers, generated_headers],
+  include_directories: public_headers,
 )
 
 test('threshold_eval_edge_cases', test_edge_cases)
@@ -81,7 +81,7 @@ test_nonfinite_samples = executable(
   'test_nonfinite_samples',
   files('test_nonfinite_samples.c'),
   dependencies: [threshold_eval_dep],
-  include_directories: [public_headers, generated_headers],
+  include_directories: public_headers,
 )
 
 test('threshold_eval_nonfinite_samples', test_nonfinite_samples)

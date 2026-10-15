@@ -86,7 +86,7 @@ Policy bits outside the five defined flags are stored and ignored.
 
 ## MISRA C:2023
 
-The library is analysed with [`misch`](https://pypi.org/project/misch/), a cppcheck-based MISRA C:2023 checker, over `include/` and `src/`. The baseline of accepted findings is in `analysis/baseline/`, and CI fails on any finding outside it. It holds 107 findings:
+The library is analysed with [`misch`](https://pypi.org/project/misch/), a cppcheck-based MISRA C:2023 checker, over `include/` and `src/`. The baseline of accepted findings is in `analysis/baseline/`, and CI fails on any finding outside it. The version macros in `threshold_eval.h` carry an inline deviation of Rule 2.5 (unused macro), because they exist for consumers and the library does not use them. The baseline holds 107 findings:
 
 | Rule | Findings | Cause |
 | --- | --- | --- |
