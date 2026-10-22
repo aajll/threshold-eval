@@ -324,16 +324,16 @@ monitors_poll(struct monitor *mon, const float *samples, unsigned count)
 <!-- snippet: skip -->
 ```c
 #define THRESHOLD_EVAL_VERSION_MAJOR 1
-#define THRESHOLD_EVAL_VERSION_MINOR 2
+#define THRESHOLD_EVAL_VERSION_MINOR 3
 #define THRESHOLD_EVAL_VERSION_PATCH 0
-#define THRESHOLD_EVAL_VERSION "1.2.0"
+#define THRESHOLD_EVAL_VERSION "1.3.0"
 ```
 
 `THRESHOLD_EVAL_VERSION_NUMBER` is `MAJOR * 10000 + MINOR * 100 + PATCH` as a `long`, so it holds any version where `int` is 16 bits. Compare it in the preprocessor to require a minimum release:
 
 ```c
-#if THRESHOLD_EVAL_VERSION_NUMBER < 10200L
-#error "threshold_eval 1.2.0 or later is required"
+#if THRESHOLD_EVAL_VERSION_NUMBER < 10300L
+#error "threshold_eval 1.3.0 or later is required"
 #endif
 ```
 

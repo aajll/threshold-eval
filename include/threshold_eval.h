@@ -55,9 +55,9 @@
 /* cppcheck-suppress-begin misra-c2012-2.5 ; @deviation Public version macros
  * for consumer diagnostics and #if checks; the library does not use them. */
 #define THRESHOLD_EVAL_VERSION_MAJOR  1
-#define THRESHOLD_EVAL_VERSION_MINOR  2
+#define THRESHOLD_EVAL_VERSION_MINOR  3
 #define THRESHOLD_EVAL_VERSION_PATCH  0
-#define THRESHOLD_EVAL_VERSION        "1.2.0"
+#define THRESHOLD_EVAL_VERSION        "1.3.0"
 #define THRESHOLD_EVAL_VERSION_STRING THRESHOLD_EVAL_VERSION
 #define THRESHOLD_EVAL_VERSION_NUMBER                                          \
         ((THRESHOLD_EVAL_VERSION_MAJOR * 10000L)                               \
